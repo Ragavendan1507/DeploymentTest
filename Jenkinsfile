@@ -15,17 +15,26 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build') {stage('Deploy') {
+    steps {
+        withCredentials([string(credentialsId: 'FIREBASE_TOKEN', variable: 'FIREBASE_TOKEN')]) {
+            sh 'npx firebase deploy --token "$FIREBASE_TOKEN"'
+        }
+    }
+}
+
             steps {
                 sh 'npm run build'
             }
         }
         stage('Deploy') {
-            steps {
-               sh 'firebase deploy'
-               
-            }
+    steps {
+        withCredentials([string(credentialsId: 'FIREBASE_TOKEN', variable: 'FIREBASE_TOKEN')]) {
+            sh 'npx firebase deploy --token $FIREBASE_TOKEN'
         }
+    }
+}
+
     }
 
     post {
