@@ -27,7 +27,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 withCredentials([string(credentialsId: 'FIREBASE_TOKEN', variable: 'FIREBASE_TOKEN')]) {
-                    sh 'npx firebase deploy --token $FIREBASE_TOKEN'
+                    sh '''
+                        npm install -g firebase-tools
+                        firebase deploy --token $FIREBASE_TOKEN
+                    '''
                 }
             }
         }
