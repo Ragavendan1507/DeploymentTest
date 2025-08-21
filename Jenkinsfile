@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/your-username/your-vite-project.git', branch: 'master'
+                git url: 'https://github.com/Ragavendan1507/DeploymentTest.git', branch: 'master'
             }
         }
 
@@ -22,14 +22,14 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'npm run test'  // optional, only if you have tests
+                sh 'npm run test' 
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploy step here (e.g., copy build to server)'
-                // Example: sh 'scp -r dist/* user@server:/var/www/html/'
+               
             }
         }
     }
