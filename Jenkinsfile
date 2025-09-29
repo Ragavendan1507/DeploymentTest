@@ -31,17 +31,20 @@ pipeline {
             }
         }
 
-        stage('Docker Build & Push') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        docker build -t $DOCKER_IMAGE .
-                        docker push $DOCKER_IMAGE
-                    '''
-                }
+       stage('Docker Build & Push') {
+         steps {
+            withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_TOKEN', 
+                                         usernameVariable: 'DOCKER_USER', 
+                                         passwordVariable: 'DOCKER_PASS')]) {
+            sh '''
+                docker login -u $DOCKER_USER -p $DOCKER_PASS
+                docker build -t ragav1526/vite-app:latest .
+                docker push ragav1526/vite-app:latest
+            '''
             }
+         }
         }
+
 
         stage('Firebase Deploy') {
             steps {
