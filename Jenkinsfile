@@ -5,7 +5,14 @@ pipeline {
         nodejs "node js"
     }
 
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('DOCKER_HUB_TOKEN')
+        FIREBASE_TOKEN = credentials('FIREBASE_TOKEN')
+        DOCKER_IMAGE = 'ragav1526/vite-app:latest'
+    }
+
     stages {
+
         stage('Checkout') {
             steps {
                 git url: 'https://github.com/Ragavendan1507/DeploymentTest.git', branch: 'master'
@@ -24,14 +31,24 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Docker Build & Push') {
             steps {
-                withCredentials([string(credentialsId: 'FIREBASE_TOKEN', variable: 'FIREBASE_TOKEN')]) {
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
-                        npm install -g firebase-tools
-                        firebase deploy --token $FIREBASE_TOKEN
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker build -t $DOCKER_IMAGE .
+                        docker push $DOCKER_IMAGE
                     '''
                 }
+            }
+        }
+
+        stage('Firebase Deploy') {
+            steps {
+                sh '''
+                    npm install -g firebase-tools
+                    firebase deploy --token $FIREBASE_TOKEN
+                '''
             }
         }
     }
